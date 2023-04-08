@@ -8,8 +8,6 @@ from datetime import date, datetime
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 import gspread
-from scraper import coleta_dados
-from planilha import enviar_dados
 
 app = Flask(__name__)
 
