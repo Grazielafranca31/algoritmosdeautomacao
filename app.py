@@ -1,13 +1,14 @@
-from flask import Flask, render_template
-import requests
-import pandas as pd
+import gspread
 import json
-import sendgrid
 import os
+import pandas as pd
+import requests
+import sendgrid
+
 from datetime import date, datetime
+from flask import Flask, render_template
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
-import gspread
 
 app = Flask(__name__)
 
