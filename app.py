@@ -10,7 +10,7 @@ from flask import Flask, render_template
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
-resultado_scraper = coleta_dados() 
+resultado_scraper = coleta_dados_view() 
 enviar_dados(resultado_scraper)
 
 app = Flask(__name__)
