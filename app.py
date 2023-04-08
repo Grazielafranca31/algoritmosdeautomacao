@@ -10,14 +10,14 @@ from flask import Flask, render_template
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
-resultado_scraper = coleta_dados_view() 
-enviar_dados(resultado_scraper)
-
 app = Flask(__name__)
+
+# resultado_scraper = coleta_dados_view() 
+# enviar_dados(resultado_scraper)
 
 @app.route("/")
 def index():
-    return print(resultado_scraper)
+    return "olá" #print(resultado_scraper)
 
 @app.route('/sobre')
 def coleta_dados_view():
@@ -115,29 +115,54 @@ def coletar_dados_planilha():
     emails = planilha.worksheet("emails")
     lista_emails = emails.get_all_records()
     return lista_emails
-  
+ 
 @app.route('/enviando')
-def enviandoemail(lista_emails, resultado_scraper):
-    table_html = resultado_scraper.to_html()
-    linhas = []
-    texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{table_html}"
-    print(texto)
+def enviar_email():
+    lista_emails = coletar_dados_planilha()
+    resultado_scraper = coleta_dados_view()
+    email_body = resultado_scraper.to_html()
+    sended_emails = []
+
+    for email in lista_emails:
+        message = Mail(
+            from_email='youremail@example.com',
+            to_emails=email['Email'],
+            subject='Notícias dos veículos independentes do Nordeste',
+            html_content=email_body)
+
+        try:
+            sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID'))
+            response = sg.send(message)
+            sended_emails.append(email['Email'])
+
+        except Exception as e:
+            print(e)
+
+    return f"Emails enviados para: {', '.join(sended_emails)}" 
+
+    
+# @app.route('/enviando')
+# def enviandoemail(lista_emails, resultado_scraper):
+#     table_html = resultado_scraper.to_html()
+#     linhas = []
+#     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{table_html}"
+#     print(texto)
         
-    sg = sendgrid.SendGridAPIClient("SENDGRID")
+#     sg = sendgrid.SendGridAPIClient("SENDGRID")
 
-    for email_dict in lista_emails:
-        email = email_dict.get('Email', 'email não encontrado')
-        mail = Mail(
-            from_email=Email("ola@agenciatatu.com.br"),
-            to_emails=To(email),
-            subject="Matérias de veículos independentes do Nordeste desta semana",
-            plain_text_content=texto
-        )
+#     for email_dict in lista_emails:
+#         email = email_dict.get('Email', 'email não encontrado')
+#         mail = Mail(
+#             from_email=Email("ola@agenciatatu.com.br"),
+#             to_emails=To(email),
+#             subject="Matérias de veículos independentes do Nordeste desta semana",
+#             plain_text_content=texto
+#         )
 
-        mail_json = mail.get()
-        response = sg.client.mail.send.post(request_body=mail_json)
-        print(f"Status do envio para {email}: {response.status_code}")
-        print(response.headers)
+#         mail_json = mail.get()
+#         response = sg.client.mail.send.post(request_body=mail_json)
+#         print(f"Status do envio para {Email}: {response.status_code}")
+#         print(response.headers)
   
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
