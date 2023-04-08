@@ -73,21 +73,21 @@ def enviar_dados_view():
     aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
 
-  @app.route('/coletaplanilha')
-  def coletar_dados_planilha():
-      scopes = [
-          'https://www.googleapis.com/auth/spreadsheets',
-          'https://www.googleapis.com/auth/drive'
-      ]
-      credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
-      gc = gspread.authorize(credentials)
-      planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-      emails = planilha.worksheet("emails")
-      lista_emails = emails.get_all_records()
-      return lista_emails
+@app.route('/coletaplanilha')
+def coletar_dados_planilha():
+    scopes = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+    ]
+    credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
+    gc = gspread.authorize(credentials)
+    planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
+    emails = planilha.worksheet("emails")
+    lista_emails = emails.get_all_records()
+    return lista_emails
   
-  @app.route('/enviando')
-  def enviandoemail(lista_emails, resultado_scraper):
+@app.route('/enviando')
+def enviandoemail(lista_emails, resultado_scraper):
     table_html = resultado_scraper.to_html()
     linhas = []
     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{table_html}"
@@ -109,7 +109,5 @@ def enviar_dados_view():
         print(f"Status do envio para {email}: {response.status_code}")
         print(response.headers)
   
-  
-  
-  if __name__ == '__main__':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
