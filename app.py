@@ -68,9 +68,38 @@ def enviar_dados_view():
     conta = ServiceAccountCredentials.from_service_account_file("credenciais.json")
     api = gspread.authorize(conta)
     planilha_google = api.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-    aba_resultado_consulta = planilha_google.worksheet("Página2")
+    aba_resultado_consulta = planilha_google.worksheet("Página1")
     aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
+    
+@app.route('/telegram')
+def telegram_bot():
+    update = request.json
+    chat_id = update['message']['chat']['id']
+    user_name = update['message']['from']['username']
+    message = update["message"]["text"]
+    planilha2 = []
+    if "@" in message:
+        palavras = message.split(" ")
+        for palavra in palavras:
+            if "@" in palavra:
+                email = palavra
+                texto_resposta = f"Obrigada por informar o e-mail {email}. Você começará a receber as notícias de veículos independentes do Nordeste!"
+                break
+        # Selecionando a primeira planilha
+        gc = gspread.service_account(filename='credenciais.json')
+        planilha = gc.open('nome_da_planilha').sheet1
+        planilha.append_row([user_name, chat_id, email])
+        nova_mensagem = {"chat_id": chat_id, "text": texto_resposta}
+        resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
+        print(resposta.text)
+        return "Mensagens enviadas no Telegram!"
+    else:
+        texto_resposta = "Desculpe, este não é um e-mail válido. Pode enviar novamente, por favor?"
+        nova_mensagem = {"chat_id": chat_id, "text": texto_resposta}
+        resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
+        print(resposta.text)
+        return "Mensagens enviadas no Telegram!"
 
 @app.route('/coletaplanilha')
 def coletar_dados_planilha():
