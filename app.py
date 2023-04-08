@@ -17,8 +17,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    table_html = resultado_scraper.to_html()
-    return render_template('index.html', table_html=table_html)
+    return print(resultado_scraper)
 
 @app.route('/sobre')
 def coleta_dados_view():
