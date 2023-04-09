@@ -7,6 +7,7 @@ import sendgrid
 
 from datetime import date, datetime
 from flask import Flask, render_template
+from google.auth import Credentials
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
