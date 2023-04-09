@@ -83,7 +83,7 @@ def enviar_dados_view():
     
 @app.route('/telegram', methods=["POST"])
 def telegram_bot():
-    update = request.json
+    update = requests.json
     chat_id = update['message']['chat']['id']
     user_name = update['message']['from']['username']
     message = update["message"]["text"]
