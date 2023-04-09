@@ -21,7 +21,6 @@ conta = ServiceAccountCredentials.from_service_account_file("credenciais.json")
 api = gspread.authorize(conta)
 planilha_google = api.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
 aba_resultado_consulta = planilha_google.worksheet("Página1")
-aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     
 app = Flask(__name__)
 
@@ -77,6 +76,8 @@ def coleta_dados_view():
 
 @app.route('/planilha')
 def enviar_dados_view():
+    aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
+
 #     GOOGLE_SHEETS_CREDENTIALS = os.environ["GOOGLE_SHEETS_CREDENTIALS"]
 #     with open("credenciais.json", mode="w") as arquivo:
 #         arquivo.write(GOOGLE_SHEETS_CREDENTIALS)
@@ -86,6 +87,7 @@ def enviar_dados_view():
 #     aba_resultado_consulta = planilha_google.worksheet("Página1")
 #     aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
+    return "Deu certo!"
     
 @app.route('/telegram', methods=["POST"])
 def telegram_bot():
