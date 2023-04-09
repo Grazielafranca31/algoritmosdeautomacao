@@ -22,8 +22,6 @@ aba_resultado_consulta = planilha_google.worksheet("Página1")
     
 app = Flask(__name__)
 
-# resultado_scraper = coleta_dados_view() 
-# enviar_dados(resultado_scraper)
 
 @app.route("/")
 def index():
@@ -80,16 +78,6 @@ def coleta_dados_view():
 @app.route('/planilha')
 def enviar_dados_view():
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
-    #aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
-
-#     GOOGLE_SHEETS_CREDENTIALS = os.environ["GOOGLE_SHEETS_CREDENTIALS"]
-#     with open("credenciais.json", mode="w") as arquivo:
-#         arquivo.write(GOOGLE_SHEETS_CREDENTIALS)
-#     conta = ServiceAccountCredentials.from_service_account_file("credenciais.json")
-#     api = gspread.authorize(conta)
-#     planilha_google = api.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-#     aba_resultado_consulta = planilha_google.worksheet("Página1")
-#     aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
     return "Deu certo!"
     
@@ -133,31 +121,7 @@ def coletar_dados_planilha():
     planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
     emails = planilha.worksheet("emails")
     lista_emails = emails.get_all_records()
-    return lista_emails
- 
-# @app.route('/enviando')
-# def enviar_email():
-#     lista_emails = coletar_dados_planilha()
-#     resultado_scraper = coleta_dados_view()
-#     email_body = resultado_scraper.to_html()
-#     sended_emails = []
-
-#     for email in lista_emails:
-#         message = Mail(
-#             from_email='youremail@example.com',
-#             to_emails=email['Email'],
-#             subject='Notícias dos veículos independentes do Nordeste',
-#             html_content=email_body)
-
-#         try:
-#             sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID'))
-#             response = sg.send(message)
-#             sended_emails.append(email['Email'])
-
-#         except Exception as e:
-#             print(e)
-
-#     return f"Emails enviados para: {', '.join(sended_emails)}" 
+    return lista_emails 
 
     
 @app.route('/enviando')
