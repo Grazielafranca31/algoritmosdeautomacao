@@ -109,7 +109,7 @@ def telegram_bot():
         resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
         print(resposta.text)
         return "Mensagens enviadas no Telegram!"
-
+      
 @app.route('/coletaplanilha')
 def coletar_dados_planilha():
     scopes = [
@@ -118,10 +118,23 @@ def coletar_dados_planilha():
     ]
     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
     gc = gspread.authorize(credentials)
-    planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-    emails = planilha.worksheet("emails")
-    lista_emails = emails.get_all_records()
-    return lista_emails 
+    planilha = gc.open('nome_da_planilha').sheet1
+    dados = planilha.get_all_values()
+    return str(dados)
+
+      
+# @app.route('/coletaplanilha')
+# def coletar_dados_planilha():
+#     scopes = [
+#         'https://www.googleapis.com/auth/spreadsheets',
+#         'https://www.googleapis.com/auth/drive'
+#     ]
+#     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
+#     gc = gspread.authorize(credentials)
+#     planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
+#     emails = planilha.worksheet("emails")
+#     lista_emails = emails.get_all_records()
+#     return lista_emails 
 
     
 @app.route('/enviando')
