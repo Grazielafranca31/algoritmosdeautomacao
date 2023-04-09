@@ -49,7 +49,12 @@ def coleta_dados_view():
 
         # Coletar os dados do site
         requisicao = requests.get(url, headers=headers).json()
-
+        try:
+            requisicao = requests.get(url, headers=headers).json()
+        except requests.exceptions.RequestException as e:
+            print(f"Erro na requisição: {e}")
+            
+                       
         # Iterar sobre as matérias coletadas
         for materia in requisicao:
             # Extrair o título e link da matéria
@@ -74,7 +79,8 @@ def coleta_dados_view():
 
 @app.route('/planilha')
 def enviar_dados_view():
-    aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
+    aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
+    #aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
 
 #     GOOGLE_SHEETS_CREDENTIALS = os.environ["GOOGLE_SHEETS_CREDENTIALS"]
 #     with open("credenciais.json", mode="w") as arquivo:
@@ -93,7 +99,7 @@ def telegram_bot():
     chat_id = update['message']['chat']['id']
     user_name = update['message']['from']['username']
     message = update["message"]["text"]
-    planilha2 = []
+    #planilha2 = []
     if "@" in message:
         palavras = message.split(" ")
         for palavra in palavras:
