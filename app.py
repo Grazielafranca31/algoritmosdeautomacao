@@ -141,28 +141,28 @@ def enviar_email():
     return f"Emails enviados para: {', '.join(sended_emails)}" 
 
     
-# @app.route('/enviando')
-# def enviandoemail(lista_emails, resultado_scraper):
-#     table_html = resultado_scraper.to_html()
-#     linhas = []
-#     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{table_html}"
-#     print(texto)
+@app.route('/enviando')
+def enviandoemail(lista_emails, resultado_scraper):
+    news = resultado_scraper
+    linhas = []
+    texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{news}"
+    print(texto)
         
-#     sg = sendgrid.SendGridAPIClient("SENDGRID")
+    sg = sendgrid.SendGridAPIClient("SENDGRID")
 
-#     for email_dict in lista_emails:
-#         email = email_dict.get('Email', 'email não encontrado')
-#         mail = Mail(
-#             from_email=Email("ola@agenciatatu.com.br"),
-#             to_emails=To(email),
-#             subject="Matérias de veículos independentes do Nordeste desta semana",
-#             plain_text_content=texto
-#         )
+    for email_dict in lista_emails:
+        email = email_dict.get('Email', 'email não encontrado')
+        mail = Mail(
+            from_email=Email("ola@agenciatatu.com.br"),
+            to_emails=To(Email),
+            subject="Matérias de veículos independentes do Nordeste desta semana",
+            plain_text_content=texto
+        )
 
-#         mail_json = mail.get()
-#         response = sg.client.mail.send.post(request_body=mail_json)
-#         print(f"Status do envio para {Email}: {response.status_code}")
-#         print(response.headers)
+        mail_json = mail.get()
+        response = sg.client.mail.send.post(request_body=mail_json)
+        print(f"Status do envio para {Email}: {response.status_code}")
+        print(response.headers)
   
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
