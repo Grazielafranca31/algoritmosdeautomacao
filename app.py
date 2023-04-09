@@ -72,7 +72,7 @@ def coleta_dados_view():
     df_total = pd.DataFrame(lista_materias)
 
     # Selecionar apenas as três últimas matérias
-    df_ultimas_materias = df_total.tail()
+    df_ultimas_materias = df_total
 
     #enviar_dados(df_ultimas_materias)
     return str(df_ultimas_materias)
