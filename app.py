@@ -74,7 +74,7 @@ def enviar_dados_view():
     aba_resultado_consulta.append_rows(resultado_scraper.values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
     
-@app.route('/telegram')
+@app.route('/telegram', methods=["POST"])
 def telegram_bot():
     update = request.json
     chat_id = update['message']['chat']['id']
