@@ -135,29 +135,29 @@ def coletar_dados_planilha():
     lista_emails = emails.get_all_records()
     return lista_emails
  
-@app.route('/enviando')
-def enviar_email():
-    lista_emails = coletar_dados_planilha()
-    resultado_scraper = coleta_dados_view()
-    email_body = resultado_scraper.to_html()
-    sended_emails = []
+# @app.route('/enviando')
+# def enviar_email():
+#     lista_emails = coletar_dados_planilha()
+#     resultado_scraper = coleta_dados_view()
+#     email_body = resultado_scraper.to_html()
+#     sended_emails = []
 
-    for email in lista_emails:
-        message = Mail(
-            from_email='youremail@example.com',
-            to_emails=email['Email'],
-            subject='Notícias dos veículos independentes do Nordeste',
-            html_content=email_body)
+#     for email in lista_emails:
+#         message = Mail(
+#             from_email='youremail@example.com',
+#             to_emails=email['Email'],
+#             subject='Notícias dos veículos independentes do Nordeste',
+#             html_content=email_body)
 
-        try:
-            sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID'))
-            response = sg.send(message)
-            sended_emails.append(email['Email'])
+#         try:
+#             sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID'))
+#             response = sg.send(message)
+#             sended_emails.append(email['Email'])
 
-        except Exception as e:
-            print(e)
+#         except Exception as e:
+#             print(e)
 
-    return f"Emails enviados para: {', '.join(sended_emails)}" 
+#     return f"Emails enviados para: {', '.join(sended_emails)}" 
 
     
 @app.route('/enviando')
