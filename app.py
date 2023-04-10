@@ -29,7 +29,7 @@ def index():
     return "olá" #print(resultado_scraper)
 
 #RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
-@app.route('/raspagem')
+@app.route("/raspagem")
 def coleta_dados_view():
     # Criar uma lista de URLs dos sites a serem coletados
     urls = [
@@ -87,7 +87,7 @@ coleta_dados_view()
 print("rodou coleta de dados")
 
 #APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
-@app.route('/planilha')
+@app.route("/planilha")
 def enviar_dados_view():
     aba_resultado_consulta.batch_clear(['A:Z'])
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
@@ -95,7 +95,7 @@ def enviar_dados_view():
 
 enviar_dados_view()
   
-@app.route('/telegram', methods=["POST"])
+@app.route("/telegram", methods=["POST"])
 def telegram_bot():
     update = request.json
     chat_id = update['message']['chat']['id']
@@ -161,7 +161,7 @@ def telegram_bot():
         print(resposta.text)
         return "Mensagens enviadas no Telegram!"
           
-@app.route('/coletaplanilha')
+@app.route("/coletaplanilha")
 def coletar_dados_planilha():
 
     emails = planilha_google.worksheet("emails")
