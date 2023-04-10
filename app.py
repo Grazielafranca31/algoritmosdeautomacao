@@ -80,7 +80,7 @@ def enviar_dados_view():
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
     print('deu certo!')
     return "Deu certo!"
-    
+  
 @app.route('/telegram', methods=["POST"])
 def telegram_bot():
     update = request.json
@@ -88,7 +88,7 @@ def telegram_bot():
     message = update["message"]["text"]
     first_name = update['message']['from']['first_name']
     last_name = update['message']['from']['last_name']
-    user_name = update['message']['from']['username']
+    user_name = update['message']['from'].get('username', None) # Adicionado o .get() para retornar None caso 'username' não exista
     sender_id = update['message']['from']['id']
     chat_id = update['message']['chat']['id']
     #planilha2 = []
@@ -101,7 +101,28 @@ def telegram_bot():
                 break
         # Selecionando a primeira planilha
         gc = gspread.service_account(filename='credenciais.json')
-        planilha = gc.open('nome_da_planilha').sheet1
+        planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').
+# @app.route('/telegram', methods=["POST"])
+# def telegram_bot():
+#     update = request.json
+#     chat_id = update['message']['chat']['id']
+#     message = update["message"]["text"]
+#     first_name = update['message']['from']['first_name']
+#     last_name = update['message']['from']['last_name']
+#     user_name = update['message']['from']['username']
+#     sender_id = update['message']['from']['id']
+#     chat_id = update['message']['chat']['id']
+#     #planilha2 = []
+#     if "@" in message:
+#         palavras = message.split(" ")
+#         for palavra in palavras:
+#             if "@" in palavra:
+#                 email = palavra
+#                 texto_resposta = f"Obrigada por informar o e-mail {email}. Você começará a receber as notícias de veículos independentes do Nordeste!"
+#                 break
+#         # Selecionando a primeira planilha
+#         gc = gspread.service_account(filename='credenciais.json')
+#         planilha = gc.open('nome_da_planilha').sheet1
         planilha.append_row([user_name, chat_id, email])
         nova_mensagem = {"chat_id": chat_id, "text": texto_resposta}
         resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
@@ -113,20 +134,7 @@ def telegram_bot():
         resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
         print(resposta.text)
         return "Mensagens enviadas no Telegram!"
-      
-# @app.route('/coletaplanilha')
-# def coletar_dados_planilha():
-#     scopes = [
-#         'https://www.googleapis.com/auth/spreadsheets',
-#         'https://www.googleapis.com/auth/drive'
-#     ]
-#     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
-#     gc = gspread.authorize(credentials)
-#     planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').sheet1
-#     dados = planilha.get_all_values()
-#     return str(dados)
-
-      
+          
 @app.route('/coletaplanilha')
 def coletar_dados_planilha():
     scopes = [
@@ -140,29 +148,59 @@ def coletar_dados_planilha():
     lista_emails = Emails.get_all_records()
     return lista_emails 
 
-    
 @app.route('/enviando')
-def enviandoemail(lista_emails, resultado_scraper):
-    news = resultado_scraper
+def enviandoemail():
+    lista_emails = [{'Email': 'graziela.fcs@gmail.com'}, {'Email': 'grazy_fc@hotmail.com'}]
+    resultado_scraper = []
+
+    news = "\n".join(resultado_scraper)
     linhas = []
     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{news}"
     print(texto)
         
-    sg = sendgrid.SendGridAPIClient("SENDGRID")
+    sg = sendgrid.SendGridAPIClient("SENDGRID_API_KEY")
 
     for email_dict in lista_emails:
         email = email_dict.get('Email', 'email não encontrado')
         mail = Mail(
             from_email=Email("ola@agenciatatu.com.br"),
-            to_emails=To(Email),
+            to_emails=email,
             subject="Matérias de veículos independentes do Nordeste desta semana",
             plain_text_content=texto
         )
 
         mail_json = mail.get()
         response = sg.client.mail.send.post(request_body=mail_json)
-        print(f"Status do envio para {Email}: {response.status_code}")
+        print(f"Status do envio para {email}: {response.status_code}")
         print(response.headers)
+
+    return 'E-mails enviados com sucesso!'
+
+if _name_ == '_main_':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000))) 
+
+# @app.route('/enviando')
+# def enviandoemail(lista_emails, resultado_scraper):
+#     news = resultado_scraper
+#     linhas = []
+#     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{news}"
+#     print(texto)
+        
+#     sg = sendgrid.SendGridAPIClient("SENDGRID")
+
+#     for email_dict in lista_emails:
+#         email = email_dict.get('Email', 'email não encontrado')
+#         mail = Mail(
+#             from_email=Email("ola@agenciatatu.com.br"),
+#             to_emails=To(Email),
+#             subject="Matérias de veículos independentes do Nordeste desta semana",
+#             plain_text_content=texto
+#         )
+
+#         mail_json = mail.get()
+#         response = sg.client.mail.send.post(request_body=mail_json)
+#         print(f"Status do envio para {Email}: {response.status_code}")
+#         print(response.headers)
   
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
