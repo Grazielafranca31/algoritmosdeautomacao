@@ -83,6 +83,9 @@ def coleta_dados_view():
     print(df_ultimas_materias)
     print("PEGOU DATAFRAME COM MATERIAS")
     return(df_ultimas_materias)
+  
+coleta_dados_view()
+print("rodou coleta de dados")
 
 @app.route('/planilha')
 #APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
