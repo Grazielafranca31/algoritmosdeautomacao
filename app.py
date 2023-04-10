@@ -91,7 +91,19 @@ def telegram_bot():
     user_name = update['message']['from'].get('username', None) # Adicionado o .get() para retornar None caso 'username' não exista
     sender_id = update['message']['from']['id']
     chat_id = update['message']['chat']['id']
+ 
+    if "text" not in update["message"]:
+      continue  # Essa mensagem não é um texto!
+    message = update["message"]["text"]
+    chat_id = update["message"]["chat"]["id"]
+    if "username" in update["message"]["from"]:
+      username = f' @{update["message"]["from"]["username"]}'
+    else:
+      username = ""
+    print(f"Nova mensagem de {first_name}{username} ({chat_id}): {message}")
+    
     #planilha2 = []
+    
     if "@" in message:
         palavras = message.split(" ")
         for palavra in palavras:
@@ -176,8 +188,8 @@ def enviandoemail():
 
     return 'E-mails enviados com sucesso!'
 
-if _name_ == '_main_':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000))) 
+# if _name_ == '_main_':
+#     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000))) 
 
 # @app.route('/enviando')
 # def enviandoemail(lista_emails, resultado_scraper):
@@ -202,5 +214,5 @@ if _name_ == '_main_':
 #         print(f"Status do envio para {Email}: {response.status_code}")
 #         print(response.headers)
   
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
