@@ -6,7 +6,7 @@ import requests
 import sendgrid
 
 from datetime import date, datetime
-from flask import Flask, render_template
+from flask import Flask, request
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
@@ -110,19 +110,6 @@ def telegram_bot():
         print(resposta.text)
         return "Mensagens enviadas no Telegram!"
       
-@app.route('/coletaplanilha')
-def coletar_dados_planilha():
-    scopes = [
-        'https://www.googleapis.com/auth/spreadsheets',
-        'https://www.googleapis.com/auth/drive'
-    ]
-    credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
-    gc = gspread.authorize(credentials)
-    planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').sheet1
-    dados = planilha.get_all_values()
-    return str(dados)
-
-      
 # @app.route('/coletaplanilha')
 # def coletar_dados_planilha():
 #     scopes = [
@@ -131,10 +118,23 @@ def coletar_dados_planilha():
 #     ]
 #     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
 #     gc = gspread.authorize(credentials)
-#     planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-#     emails = planilha.worksheet("Emails")
-#     lista_emails = Emails.get_all_records()
-#     return lista_emails 
+#     planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').sheet1
+#     dados = planilha.get_all_values()
+#     return str(dados)
+
+      
+@app.route('/coletaplanilha')
+def coletar_dados_planilha():
+    scopes = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive'
+    ]
+    credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
+    gc = gspread.authorize(credentials)
+    planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
+    emails = planilha.worksheet("Emails")
+    lista_emails = Emails.get_all_records()
+    return lista_emails 
 
     
 @app.route('/enviando')
