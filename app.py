@@ -91,15 +91,15 @@ def telegram_bot():
     user_name = update['message']['from'].get('username', None) # Adicionado o .get() para retornar None caso 'username' não exista
     sender_id = update['message']['from']['id']
     chat_id = update['message']['chat']['id']
- 
+
     if "text" not in update["message"]:
-      continue  # Essa mensagem não é um texto!
+        continue  # Essa mensagem não é um texto!
     message = update["message"]["text"]
     chat_id = update["message"]["chat"]["id"]
     if "username" in update["message"]["from"]:
-      username = f' @{update["message"]["from"]["username"]}'
+        username = f' @{update["message"]["from"]["username"]}'
     else:
-      username = ""
+        username = ""
     print(f"Nova mensagem de {first_name}{username} ({chat_id}): {message}")
     
     #planilha2 = []
