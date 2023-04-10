@@ -28,9 +28,8 @@ app = Flask(__name__)
 def index():
     return "olá" #print(resultado_scraper)
 
+#RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
 @app.route('/raspagem')
-#RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME
-
 def coleta_dados_view():
     # Criar uma lista de URLs dos sites a serem coletados
     urls = [
@@ -87,8 +86,8 @@ def coleta_dados_view():
 coleta_dados_view()
 print("rodou coleta de dados")
 
-@app.route('/planilha')
 #APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
+@app.route('/planilha')
 def enviar_dados_view():
     aba_resultado_consulta.batch_clear(['A:Z'])
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
@@ -170,8 +169,8 @@ def coletar_dados_planilha():
     return lista_emails
 print(coletar_dados_planilha())
 
-@app.route('/enviando')
 #DISPARA EMAILS COM AS MATÉRIAS QUE ESTÃO NO GOOGLE SHEETS
+@app.route('/enviando')
 def enviandoemail():
     ultimas_materias = coleta_dados_view()
     lista_emails = coletar_dados_planilha()
