@@ -15,6 +15,7 @@ TELEGRAM_ADMIN_ID = os.environ["TELEGRAM_ADMIN_ID"]
 GOOGLE_SHEETS_CREDENTIALS = os.environ["GOOGLE_SHEETS_CREDENTIALS"]
 with open("credenciais.json", mode="w") as arquivo:
   arquivo.write(GOOGLE_SHEETS_CREDENTIALS)
+  print("pegou credenciais sheets")
 conta = ServiceAccountCredentials.from_json_keyfile_name("credenciais.json")
 api = gspread.authorize(conta)
 planilha_google = api.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
@@ -91,9 +92,16 @@ def telegram_bot():
     user_name = update['message']['from'].get('username', None) # Adicionado o .get() para retornar None caso 'username' não exista
     sender_id = update['message']['from']['id']
     chat_id = update['message']['chat']['id']
+    
+    if "text" not in update["message"]:
+        message = update["message"]["text"]
+        chat_id = update["message"]["chat"]["id"]
+        if "username" in update["message"]["from"]:
+           username = f' @{update["message"]["from"]["username"]}'
+        else:
+           username = ""
 
     if "text" not in update["message"]:
-        continue  # Essa mensagem não é um texto!
     message = update["message"]["text"]
     chat_id = update["message"]["chat"]["id"]
     if "username" in update["message"]["from"]:
@@ -114,6 +122,7 @@ def telegram_bot():
         # Selecionando a primeira planilha
         gc = gspread.service_account(filename='credenciais.json')
         planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo')
+        
 # @app.route('/telegram', methods=["POST"])
 # def telegram_bot():
 #     update = request.json
