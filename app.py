@@ -100,15 +100,7 @@ def telegram_bot():
            username = f' @{update["message"]["from"]["username"]}'
         else:
            username = ""
-
-    if "text" not in update["message"]:
-    message = update["message"]["text"]
-    chat_id = update["message"]["chat"]["id"]
-    if "username" in update["message"]["from"]:
-        username = f' @{update["message"]["from"]["username"]}'
-    else:
-        username = ""
-    print(f"Nova mensagem de {first_name}{username} ({chat_id}): {message}")
+        print(f"Nova mensagem de {first_name}{username} ({chat_id}): {message}")
     
     #planilha2 = []
     
