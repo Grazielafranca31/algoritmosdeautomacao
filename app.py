@@ -118,7 +118,7 @@ def coletar_dados_planilha():
     ]
     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
     gc = gspread.authorize(credentials)
-    planilha = gc.open('nome_da_planilha').sheet1
+    planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').sheet1
     dados = planilha.get_all_values()
     return str(dados)
 
@@ -132,8 +132,8 @@ def coletar_dados_planilha():
 #     credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
 #     gc = gspread.authorize(credentials)
 #     planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-#     emails = planilha.worksheet("emails")
-#     lista_emails = emails.get_all_records()
+#     emails = planilha.worksheet("Emails")
+#     lista_emails = Emails.get_all_records()
 #     return lista_emails 
 
     
