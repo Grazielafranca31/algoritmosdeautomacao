@@ -28,36 +28,66 @@ app = Flask(__name__)
 def index():
     return "olá" #print(resultado_scraper)
 
-#RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
-@app.route("/raspagem")
 def coleta_dados_view():
-    # Criar uma lista de URLs dos sites a serem coletados
-    urls = [
-        'https://agenciatatu.com.br/wp-json/wp/v2/posts',
+  urls = ['https://agenciatatu.com.br/wp-json/wp/v2/posts',
         'https://marcozero.org/wp-json/wp/v2/posts',
-        'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts'
-    ]
+        'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts']
 
-    lista_materias = []
+  lista_materias = []
 
-    # Loop através das URLs e coletar dados de cada site
-    print("INICIA COLETA DAS URLS")
-    for url in urls:
-        print("Coleta URL")
-        print(url)
-        # Adicionar um header para evitar bloqueio por parte do servidor
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-        }
+  for url in urls:
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    try:
+      requisicao = requests.get(url, headers=headers).json()
+    except requests.exceptions.RequestException as e:
+      print(f"Erro na requisição: {e}")
+      
+    for materia in requisicao:
+      titulo_materia = materia.get('title', {}).get('rendered', '')
+      link_materia = materia.get('link', '')
 
-        # Coletar os dados do site
-        requisicao = requests.get(url, headers=headers).json()
-        try:
-            requisicao = requests.get(url, headers=headers).json()
-        except requests.exceptions.RequestException as e:
-            print(f"Erro na requisição: {e}")
+      infos_materia = {'titulo_materia': titulo_materia,
+                'link_materia': link_materia,            }
+      lista_materias.append(infos_materia)
+
+    df_total = pd.DataFrame(lista_materias)
+
+    df_ultimas_materias = df_total
+
+    exibe = df_ultimas_materias.to_html()
+
+    return exibe
+
+# #RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
+# @app.route("/raspagem")
+# def coleta_dados_view():
+#     # Criar uma lista de URLs dos sites a serem coletados
+#     urls = [
+#         'https://agenciatatu.com.br/wp-json/wp/v2/posts',
+#         'https://marcozero.org/wp-json/wp/v2/posts',
+#         'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts'
+#     ]
+
+#     lista_materias = []
+
+#     # Loop através das URLs e coletar dados de cada site
+#     print("INICIA COLETA DAS URLS")
+#     for url in urls:
+#         print("Coleta URL")
+#         print(url)
+#         # Adicionar um header para evitar bloqueio por parte do servidor
+#         headers = {
+#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+#         }
+
+#         # Coletar os dados do site
+#         requisicao = requests.get(url, headers=headers).json()
+#         try:
+#             requisicao = requests.get(url, headers=headers).json()
+#         except requests.exceptions.RequestException as e:
+#             print(f"Erro na requisição: {e}")
           
-        
+  
                        
         # Iterar sobre as matérias coletadas
         for materia in requisicao:
