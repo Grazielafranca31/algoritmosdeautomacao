@@ -28,103 +28,70 @@ app = Flask(__name__)
 def index():
     return "olá" #print(resultado_scraper)
 
-@app.route("/raspagem2")
+#RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
+@app.route("/raspagem")
 def coleta_dados_view():
-  urls = ['https://agenciatatu.com.br/wp-json/wp/v2/posts',
+    # Criar uma lista de URLs dos sites a serem coletados
+    urls = [
+        'https://agenciatatu.com.br/wp-json/wp/v2/posts',
         'https://marcozero.org/wp-json/wp/v2/posts',
-        'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts']
+        'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts'
+    ]
 
-  lista_materias = []
+    lista_materias = []
 
-  for url in urls:
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-    try:
-      requisicao = requests.get(url, headers=headers).json()
-    except requests.exceptions.RequestException as e:
-      print(f"Erro na requisição: {e}")
-      
-    for materia in requisicao:
-      titulo_materia = materia.get('title', {}).get('rendered', '')
-      link_materia = materia.get('link', '')
+    # Loop através das URLs e coletar dados de cada site
+    print("INICIA COLETA DAS URLS")
+    for url in urls:
+        print("Coleta URL")
+        print(url)
+        # Adicionar um header para evitar bloqueio por parte do servidor
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        }
 
-      infos_materia = {'titulo_materia': titulo_materia,
-                'link_materia': link_materia,            }
-      lista_materias.append(infos_materia)
-
-    df_total = pd.DataFrame(lista_materias)
-
-    df_ultimas_materias = df_total
-
-    exibe = df_ultimas_materias.to_html()
-
-    return exibe
-
-# #RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME  
-# @app.route("/raspagem")
-# def coleta_dados_view():
-#     # Criar uma lista de URLs dos sites a serem coletados
-#     urls = [
-#         'https://agenciatatu.com.br/wp-json/wp/v2/posts',
-#         'https://marcozero.org/wp-json/wp/v2/posts',
-#         'https://agenciaeconordeste.com.br/wp-json/wp/v2/posts'
-#     ]
-
-#     lista_materias = []
-
-#     # Loop através das URLs e coletar dados de cada site
-#     print("INICIA COLETA DAS URLS")
-#     for url in urls:
-#         print("Coleta URL")
-#         print(url)
-#         # Adicionar um header para evitar bloqueio por parte do servidor
-#         headers = {
-#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-#         }
-
-#         # Coletar os dados do site
-#         requisicao = requests.get(url, headers=headers).json()
-#         try:
-#             requisicao = requests.get(url, headers=headers).json()
-#         except requests.exceptions.RequestException as e:
-#             print(f"Erro na requisição: {e}")
+        # Coletar os dados do site
+        requisicao = requests.get(url, headers=headers).json()
+        try:
+            requisicao = requests.get(url, headers=headers).json()
+        except requests.exceptions.RequestException as e:
+            print(f"Erro na requisição: {e}")
           
   
                        
-#         # Iterar sobre as matérias coletadas
-#         for materia in requisicao:
-#             # Extrair o título e link da matéria
-#             titulo_materia = materia.get('title', {}).get('rendered', '')
-#             link_materia = materia.get('link', '')
+        # Iterar sobre as matérias coletadas
+        for materia in requisicao:
+            # Extrair o título e link da matéria
+            titulo_materia = materia.get('title', {}).get('rendered', '')
+            link_materia = materia.get('link', '')
 
-#             # Adicionar os dados da matéria à lista de matérias
-#             infos_materia = {
-#                 'titulo_materia': titulo_materia,
-#                 'link_materia': link_materia,
-#             }
-#             lista_materias.append(infos_materia)
+            # Adicionar os dados da matéria à lista de matérias
+            infos_materia = {
+                'titulo_materia': titulo_materia,
+                'link_materia': link_materia,
+            }
+            lista_materias.append(infos_materia)
 
-#     # Transformar a lista de matérias em um DataFrame
-#     df_total = pd.DataFrame(lista_materias)
+    # Transformar a lista de matérias em um DataFrame
+    df_total = pd.DataFrame(lista_materias)
 
-#     # Selecionar apenas as três últimas matérias
-#     df_ultimas_materias = df_total
+    # Selecionar apenas as três últimas matérias
+    df_ultimas_materias = df_total
 
-#     #enviar_dados(df_ultimas_materias)
-#     print(df_ultimas_materias)
-#     print("PEGOU DATAFRAME COM MATERIAS")
-#     return(df_ultimas_materias)
+    #enviar_dados(df_ultimas_materias)
+    print(df_ultimas_materias)
+    print("PEGOU DATAFRAME COM MATERIAS")
+    return"df_ultimas_materias"
   
 coleta_dados_view()
-print("rodou coleta de dados")
+#print("rodou coleta de dados")
 
 #APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
 @app.route("/planilha")
 def enviar_dados_view():
     aba_resultado_consulta.batch_clear(['A:Z'])
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
-    print("Enviado para planilha!")
-
-enviar_dados_view()
+    return "Enviado para planilha!"
   
 @app.route("/telegram", methods=["POST"])
 def telegram_bot():
@@ -198,7 +165,6 @@ def coletar_dados_planilha():
     emails = planilha_google.worksheet("emails")
     lista_emails = emails.get_all_records()
     return lista_emails
-print(coletar_dados_planilha())
 
 #DISPARA EMAILS COM AS MATÉRIAS QUE ESTÃO NO GOOGLE SHEETS
 @app.route('/enviando')
@@ -228,7 +194,7 @@ def enviandoemail():
         print(f"Status do envio para {email}: {response.status_code}")
         print(response.headers)
 
-    return 'E-mails enviados com sucesso!'
+    return "E-mails enviados com sucesso!"
 
 # if _name_ == '_main_':
 #     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000))) 
