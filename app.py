@@ -101,7 +101,7 @@ def telegram_bot():
                 break
         # Selecionando a primeira planilha
         gc = gspread.service_account(filename='credenciais.json')
-        planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo').
+        planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo')
 # @app.route('/telegram', methods=["POST"])
 # def telegram_bot():
 #     update = request.json
