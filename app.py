@@ -85,8 +85,12 @@ def enviar_dados_view():
 def telegram_bot():
     update = request.json
     chat_id = update['message']['chat']['id']
-    user_name = update['message']['from']['username']
     message = update["message"]["text"]
+    first_name = update['message']['from']['first_name']
+    last_name = update['message']['from']['last_name']
+    user_name = update['message']['from']['username']
+    sender_id = update['message']['from']['id']
+    chat_id = update['message']['chat']['id']
     #planilha2 = []
     if "@" in message:
         palavras = message.split(" ")
