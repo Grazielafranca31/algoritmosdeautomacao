@@ -2,10 +2,10 @@ import gspread
 import json
 import os
 import pandas as pd
-import requests
 import sendgrid
 
 from datetime import date, datetime
+import requests
 from flask import Flask, request
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
