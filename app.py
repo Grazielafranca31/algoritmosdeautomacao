@@ -28,6 +28,7 @@ app = Flask(__name__)
 def index():
     return "olá" #print(resultado_scraper)
 
+@app.route("/raspagem2")
 def coleta_dados_view():
   urls = ['https://agenciatatu.com.br/wp-json/wp/v2/posts',
         'https://marcozero.org/wp-json/wp/v2/posts',
