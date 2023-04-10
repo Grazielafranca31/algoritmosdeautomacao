@@ -29,6 +29,8 @@ def index():
     return "olá" #print(resultado_scraper)
 
 @app.route('/raspagem')
+#RASPA SITES E MOSTRA INFORMAÇÕES COMO DATAFRAME
+
 def coleta_dados_view():
     # Criar uma lista de URLs dos sites a serem coletados
     urls = [
@@ -40,7 +42,10 @@ def coleta_dados_view():
     lista_materias = []
 
     # Loop através das URLs e coletar dados de cada site
+    print("INICIA COLETA DAS URLS")
     for url in urls:
+        print("Coleta URL")
+        print(url)
         # Adicionar um header para evitar bloqueio por parte do servidor
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -52,7 +57,8 @@ def coleta_dados_view():
             requisicao = requests.get(url, headers=headers).json()
         except requests.exceptions.RequestException as e:
             print(f"Erro na requisição: {e}")
-            
+          
+        
                        
         # Iterar sobre as matérias coletadas
         for materia in requisicao:
@@ -74,13 +80,18 @@ def coleta_dados_view():
     df_ultimas_materias = df_total
 
     #enviar_dados(df_ultimas_materias)
-    return str(df_ultimas_materias)
+    print(df_ultimas_materias)
+    print("PEGOU DATAFRAME COM MATERIAS")
+    return (df_ultimas_materias)
 
 @app.route('/planilha')
+#APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
 def enviar_dados_view():
+    aba_resultado_consulta.batch_clear(['A:Z'])
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
-    print('deu certo!')
-    return "Deu certo!"
+    print("Enviado para planilha!")
+
+enviar_dados_view()
   
 @app.route('/telegram', methods=["POST"])
 def telegram_bot():
@@ -150,20 +161,17 @@ def telegram_bot():
           
 @app.route('/coletaplanilha')
 def coletar_dados_planilha():
-    scopes = [
-        'https://www.googleapis.com/auth/spreadsheets',
-        'https://www.googleapis.com/auth/drive'
-    ]
-    credentials = Credentials.from_service_account_file('credenciais.json', scopes=scopes)
-    gc = gspread.authorize(credentials)
-    planilha = gc.open_by_key("1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo")
-    emails = planilha.worksheet("Emails")
-    lista_emails = Emails.get_all_records()
-    return lista_emails 
+
+    emails = planilha_google.worksheet("emails")
+    lista_emails = emails.get_all_records()
+    return lista_emails
+print(coletar_dados_planilha())
 
 @app.route('/enviando')
+#DISPARA EMAILS COM AS MATÉRIAS QUE ESTÃO NO GOOGLE SHEETS
+ultimas_materias = coleta_dados_view()
 def enviandoemail():
-    lista_emails = [{'Email': 'graziela.fcs@gmail.com'}, {'Email': 'grazy_fc@hotmail.com'}]
+    lista_emails = coletar_dados_planilha()
     resultado_scraper = []
 
     news = "\n".join(resultado_scraper)
@@ -171,7 +179,7 @@ def enviandoemail():
     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{news}"
     print(texto)
         
-    sg = sendgrid.SendGridAPIClient("SENDGRID_API_KEY")
+    sg = sendgrid.SendGridAPIClient(SENDGRID_API_KEY)
 
     for email_dict in lista_emails:
         email = email_dict.get('Email', 'email não encontrado')
@@ -179,7 +187,7 @@ def enviandoemail():
             from_email=Email("ola@agenciatatu.com.br"),
             to_emails=email,
             subject="Matérias de veículos independentes do Nordeste desta semana",
-            plain_text_content=texto
+            html_content=ultimas_materias.to_html()
         )
 
         mail_json = mail.get()
