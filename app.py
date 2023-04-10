@@ -10,8 +10,6 @@ from flask import Flask, request
 from oauth2client.service_account import ServiceAccountCredentials
 from sendgrid.helpers.mail import Mail, Email, To, Content
 
-TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
-TELEGRAM_ADMIN_ID = os.environ["TELEGRAM_ADMIN_ID"]
 GOOGLE_SHEETS_CREDENTIALS = os.environ["GOOGLE_SHEETS_CREDENTIALS"]
 with open("credenciais.json", mode="w") as arquivo:
   arquivo.write(GOOGLE_SHEETS_CREDENTIALS)
@@ -84,7 +82,6 @@ def coleta_dados_view():
     return"df_ultimas_materias"
   
 coleta_dados_view()
-#print("rodou coleta de dados")
 
 #APAGA GOOGLE SHEETS E ATUALIZA COM NOVO DATAFRAME
 @app.route("/planilha")
@@ -93,71 +90,7 @@ def enviar_dados_view():
     aba_resultado_consulta.append_rows(coleta_dados_view().values.tolist(), value_input_option="USER_ENTERED")
     return "Enviado para planilha!"
   
-@app.route("/telegram", methods=["POST"])
-def telegram_bot():
-    update = request.json
-    chat_id = update['message']['chat']['id']
-    message = update["message"]["text"]
-    first_name = update['message']['from']['first_name']
-    last_name = update['message']['from']['last_name']
-    user_name = update['message']['from'].get('username', None) # Adicionado o .get() para retornar None caso 'username' não exista
-    sender_id = update['message']['from']['id']
-    chat_id = update['message']['chat']['id']
-    
-    if "text" not in update["message"]:
-        message = update["message"]["text"]
-        chat_id = update["message"]["chat"]["id"]
-        if "username" in update["message"]["from"]:
-           username = f' @{update["message"]["from"]["username"]}'
-        else:
-           username = ""
-        print(f"Nova mensagem de {first_name}{username} ({chat_id}): {message}")
-    
-    #planilha2 = []
-    
-    if "@" in message:
-        palavras = message.split(" ")
-        for palavra in palavras:
-            if "@" in palavra:
-                email = palavra
-                texto_resposta = f"Obrigada por informar o e-mail {email}. Você começará a receber as notícias de veículos independentes do Nordeste!"
-                break
-        # Selecionando a primeira planilha
-        gc = gspread.service_account(filename='credenciais.json')
-        planilha = gc.open('1CfUaR0wUAYZogt0KFXp3Sh4K0Tm71p4Z7zUMgnJqdbo')
-        
-# @app.route('/telegram', methods=["POST"])
-# def telegram_bot():
-#     update = request.json
-#     chat_id = update['message']['chat']['id']
-#     message = update["message"]["text"]
-#     first_name = update['message']['from']['first_name']
-#     last_name = update['message']['from']['last_name']
-#     user_name = update['message']['from']['username']
-#     sender_id = update['message']['from']['id']
-#     chat_id = update['message']['chat']['id']
-#     #planilha2 = []
-#     if "@" in message:
-#         palavras = message.split(" ")
-#         for palavra in palavras:
-#             if "@" in palavra:
-#                 email = palavra
-#                 texto_resposta = f"Obrigada por informar o e-mail {email}. Você começará a receber as notícias de veículos independentes do Nordeste!"
-#                 break
-#         # Selecionando a primeira planilha
-#         gc = gspread.service_account(filename='credenciais.json')
-#         planilha = gc.open('nome_da_planilha').sheet1
-        planilha.append_row([user_name, chat_id, email])
-        nova_mensagem = {"chat_id": chat_id, "text": texto_resposta}
-        resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
-        print(resposta.text)
-        return "Mensagens enviadas no Telegram!"
-    else:
-        texto_resposta = "Desculpe, este não é um e-mail válido. Pode enviar novamente, por favor?"
-        nova_mensagem = {"chat_id": chat_id, "text": texto_resposta}
-        resposta = requests.post(f"https://api.telegram.org./bot{TELEGRAM_API_KEY}/sendMessage", data=nova_mensagem)
-        print(resposta.text)
-        return "Mensagens enviadas no Telegram!"
+
           
 @app.route("/coletaplanilha")
 def coletar_dados_planilha():
@@ -195,32 +128,6 @@ def enviandoemail():
         print(response.headers)
 
     return "E-mails enviados com sucesso!"
-
-# if _name_ == '_main_':
-#     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000))) 
-
-# @app.route('/enviando')
-# def enviandoemail(lista_emails, resultado_scraper):
-#     news = resultado_scraper
-#     linhas = []
-#     texto = f"Nesta semana os veículos independentes do Nordeste publicaram as seguintes matérias:\n{news}"
-#     print(texto)
-        
-#     sg = sendgrid.SendGridAPIClient("SENDGRID")
-
-#     for email_dict in lista_emails:
-#         email = email_dict.get('Email', 'email não encontrado')
-#         mail = Mail(
-#             from_email=Email("ola@agenciatatu.com.br"),
-#             to_emails=To(Email),
-#             subject="Matérias de veículos independentes do Nordeste desta semana",
-#             plain_text_content=texto
-#         )
-
-#         mail_json = mail.get()
-#         response = sg.client.mail.send.post(request_body=mail_json)
-#         print(f"Status do envio para {Email}: {response.status_code}")
-#         print(response.headers)
   
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
