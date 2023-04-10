@@ -172,7 +172,7 @@ print(coletar_dados_planilha())
 
 @app.route('/enviando')
 #DISPARA EMAILS COM AS MATÉRIAS QUE ESTÃO NO GOOGLE SHEETS
-ultimas_materias = coleta_dados_view()
+#ultimas_materias = coleta_dados_view()
 def enviandoemail():
     lista_emails = coletar_dados_planilha()
     resultado_scraper = []
@@ -190,7 +190,7 @@ def enviandoemail():
             from_email=Email("ola@agenciatatu.com.br"),
             to_emails=email,
             subject="Matérias de veículos independentes do Nordeste desta semana",
-            html_content=ultimas_materias.to_html()
+            html_content=coleta_dados_view().to_html()
         )
 
         mail_json = mail.get()
