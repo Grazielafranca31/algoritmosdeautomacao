@@ -27,7 +27,7 @@ app = Flask(__name__)
 def index():
     return "olá" #print(resultado_scraper)
 
-@app.route('/sobre')
+@app.route('/raspagem')
 def coleta_dados_view():
     # Criar uma lista de URLs dos sites a serem coletados
     urls = [
