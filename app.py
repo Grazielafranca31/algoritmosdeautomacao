@@ -89,29 +89,29 @@ def coleta_dados_view():
           
   
                        
-        # Iterar sobre as matérias coletadas
-        for materia in requisicao:
-            # Extrair o título e link da matéria
-            titulo_materia = materia.get('title', {}).get('rendered', '')
-            link_materia = materia.get('link', '')
+#         # Iterar sobre as matérias coletadas
+#         for materia in requisicao:
+#             # Extrair o título e link da matéria
+#             titulo_materia = materia.get('title', {}).get('rendered', '')
+#             link_materia = materia.get('link', '')
 
-            # Adicionar os dados da matéria à lista de matérias
-            infos_materia = {
-                'titulo_materia': titulo_materia,
-                'link_materia': link_materia,
-            }
-            lista_materias.append(infos_materia)
+#             # Adicionar os dados da matéria à lista de matérias
+#             infos_materia = {
+#                 'titulo_materia': titulo_materia,
+#                 'link_materia': link_materia,
+#             }
+#             lista_materias.append(infos_materia)
 
-    # Transformar a lista de matérias em um DataFrame
-    df_total = pd.DataFrame(lista_materias)
+#     # Transformar a lista de matérias em um DataFrame
+#     df_total = pd.DataFrame(lista_materias)
 
-    # Selecionar apenas as três últimas matérias
-    df_ultimas_materias = df_total
+#     # Selecionar apenas as três últimas matérias
+#     df_ultimas_materias = df_total
 
-    #enviar_dados(df_ultimas_materias)
-    print(df_ultimas_materias)
-    print("PEGOU DATAFRAME COM MATERIAS")
-    return(df_ultimas_materias)
+#     #enviar_dados(df_ultimas_materias)
+#     print(df_ultimas_materias)
+#     print("PEGOU DATAFRAME COM MATERIAS")
+#     return(df_ultimas_materias)
   
 coleta_dados_view()
 print("rodou coleta de dados")
